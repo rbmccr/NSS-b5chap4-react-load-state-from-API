@@ -4,7 +4,7 @@ import AnimalList from './animal/AnimalList'
 import LocationList from './location/LocationList'
 import EmployeeList from './employee/EmployeeList'
 import OwnerList from './owner/OwnerList'
-import NavBar from "./nav/NavBar"
+// import SearchResults from "./search/searchResults"
 
 class ApplicationViews extends Component {
 
@@ -23,25 +23,18 @@ class ApplicationViews extends Component {
       .then(() => fetch("http://localhost:5002/owners")
         .then(r => r.json()))
       .then(owners => newState.owners = owners)
+      .then(() => fetch("http://localhost:5002/animalsOwned")
+        .then(r => r.json()))
+      .then(ao => newState.animalsOwned = ao)
       .then(() => this.setState(newState))
   }
-
-  //join table
-  animalsOwned = [
-    { id: 1, animalId: 1, ownerId: 1 },
-    { id: 2, animalId: 1, ownerId: 2 },
-    { id: 3, animalId: 2, ownerId: 3 },
-    { id: 4, animalId: 3, ownerId: 4 },
-    { id: 5, animalId: 4, ownerId: 5 },
-    { id: 6, animalId: 5, ownerId: 6 },
-    { id: 7, animalId: 6, ownerId: 6 }
-  ]
 
   state = {
     owners: [],
     locations: [],
     animals: [],
-    employees: []
+    employees: [],
+    animalsOwned: []
   }
 
   render() {
@@ -51,7 +44,7 @@ class ApplicationViews extends Component {
           return <LocationList locations={this.state.locations} />
         }} />
         <Route path="/animals" render={(props) => {
-          return <AnimalList animals={this.state.animals} owners={this.state.owners} animalsOwned={this.animalsOwned} />
+          return <AnimalList animals={this.state.animals} owners={this.state.owners} animalsOwned={this.state.animalsOwned} />
         }} />
         <Route path="/employees" render={(props) => {
           return <EmployeeList employees={this.state.employees} />
@@ -59,7 +52,7 @@ class ApplicationViews extends Component {
         <Route path="/owners" render={(props) => {
           return <OwnerList owners={this.state.owners} />
         }} />
-        <Route path="/search"></Route>
+        <Route exact path="/search" />
       </React.Fragment>
     )
   }

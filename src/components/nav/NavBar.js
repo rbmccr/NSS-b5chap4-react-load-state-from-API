@@ -4,16 +4,11 @@ import "bootstrap/dist/css/bootstrap.min.css"
 
 class NavBar extends Component {
 
-  componentDidMount() {
-    const searchInput = document.getElementById("searchInput")
-
-    searchInput.addEventListener("keyup", (e) => {
-
-      fetch(`http://localhost:5002/animals?q=${searchInput.value}`)
-        .then(r => r.json())
-        .then(data => console.log(data))
-    })
-
+  handleKeyUp(e) {
+    const input = e.target.value
+    if (e.keyCode === 13) {
+      this.props.handleInput(input)
+    }
   }
 
   render() {
@@ -33,7 +28,7 @@ class NavBar extends Component {
             <Link className="nav-link" to="/owners">Owners</Link>
           </li>
           <li className="nav-item">
-            <Link to="/search"><input id="searchInput" type="text"></input></Link>
+            <Link to="/search"><input id="searchInput" type="text" onKeyUp={this.handleKeyUp}></input></Link>
           </li>
         </ul>
       </nav>
