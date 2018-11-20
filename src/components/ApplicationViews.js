@@ -4,7 +4,8 @@ import AnimalList from './animal/AnimalList'
 import LocationList from './location/LocationList'
 import EmployeeList from './employee/EmployeeList'
 import OwnerList from './owner/OwnerList'
-// import SearchResults from "./search/searchResults"
+import SearchResults from "./search/searchResults"
+import NavBar from './nav/NavBar'
 
 class ApplicationViews extends Component {
 
@@ -34,25 +35,72 @@ class ApplicationViews extends Component {
     locations: [],
     animals: [],
     employees: [],
-    animalsOwned: []
+    animalsOwned: [],
+    searchResults: []
+  }
+
+  searchFunction = (e) => {
+    const input = e.target.value
+    if (e.keyCode === 13) {
+      const newState = {
+        searchResults: []
+      }
+
+      return fetch(`http://localhost:5002/animals?q=${input}`)
+        .then(r => r.json())
+        .then(animals => animals.forEach(animal => {
+          newState.searchResults.push(animal)
+        }))
+        .then(() => fetch(`http://localhost:5002/employees?q=${input}`)
+          .then(r => r.json()))
+          .then(employees => employees.forEach(employee => {
+            newState.searchResults.push(employee)
+          }))
+        .then(() => fetch(`http://localhost:5002/owners?q=${input}`)
+          .then(r => r.json()))
+          .then(owners => owners.forEach(owner => {
+            newState.searchResults.push(owner)
+          }))
+        .then(() =>
+          this.setState(newState))
+    }
+
   }
 
   render() {
     return (
       <React.Fragment>
         <Route exact path="/" render={(props) => {
-          return <LocationList locations={this.state.locations} />
+          return <React.Fragment>
+            <NavBar />
+            <LocationList locations={this.state.locations} />
+          </React.Fragment>
         }} />
         <Route path="/animals" render={(props) => {
-          return <AnimalList animals={this.state.animals} owners={this.state.owners} animalsOwned={this.state.animalsOwned} />
+          return <React.Fragment>
+            <NavBar />
+            <AnimalList animals={this.state.animals} owners={this.state.owners} animalsOwned={this.state.animalsOwned} />
+          </React.Fragment>
         }} />
         <Route path="/employees" render={(props) => {
-          return <EmployeeList employees={this.state.employees} />
+          return <React.Fragment>
+            <NavBar />
+            <EmployeeList employees={this.state.employees} />
+          </React.Fragment>
         }} />
         <Route path="/owners" render={(props) => {
-          return <OwnerList owners={this.state.owners} />
+          return <React.Fragment>
+            <NavBar />
+            <OwnerList owners={this.state.owners} />
+          </React.Fragment>
         }} />
-        <Route exact path="/search" />
+        <Route exact path="/search" render={(props) => {
+          return <React.Fragment>
+            <NavBar searchFunction={this.searchFunction} />
+            <SearchResults SearchResults={this.state.searchResults} />
+          </React.Fragment>
+        }} />
+
       </React.Fragment>
     )
   }
